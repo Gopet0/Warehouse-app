@@ -1,0 +1,43 @@
+﻿@model IEnumerable<Warehouse.Models.Supplier>
+@{
+    ViewBag.Title = "Suppliers";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h1>Suppliers</h1>
+    <a href__="/Supplier/Create" class="btn btn-primary">+ Add Supplier</a>
+</div>
+
+<table>
+    <tr>
+        <th>Company</th>
+        <th>Contact Person</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.CompanyName</td>
+            <td>@item.ContactPerson</td>
+            <td>@item.Email</td>
+            <td>@item.Phone</td>
+            <td>
+                @if (item.IsActive)
+                {
+                    <span class="badge badge-success">Active</span>
+                }
+                else
+                {
+                    <span class="badge badge-danger">Inactive</span>
+                }
+            </td>
+            <td>
+                <a href__="/Supplier/Edit/@item.Id" class="btn btn-warning">Edit</a>
+                <a href__="/Supplier/Delete/@item.Id" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+    }
+</table>
