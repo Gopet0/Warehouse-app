@@ -27,6 +27,13 @@ Before running the project, make sure you have:
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download) or higher
 - SQL Server (LocalDB, SQL Express, or full SQL Server)
 - Visual Studio 2022 (recommended) or VS Code
+  
+Common Issues & Fixes
+
+SSL Certificate Error: Add TrustServerCertificate=True to the connection string.
+Login Failed: Make sure the database exists and your user has permissions (or use SQL Authentication with sa).
+No DbContext found: Add a parameterless constructor or IDesignTimeDbContextFactory.
+404 on Identity pages: Ensure app.MapRazorPages() is called in Program.cs.
 
 ## Setup Instructions
 
@@ -36,9 +43,3 @@ Before running the project, make sure you have:
 git clone https://github.com/Gopet0/Warehouse-app.git
 cd Warehouse-app
 
-Common Issues & Fixes
-
-SSL Certificate Error: Add TrustServerCertificate=True to the connection string.
-Login Failed: Make sure the database exists and your user has permissions (or use SQL Authentication with sa).
-No DbContext found: Add a parameterless constructor or IDesignTimeDbContextFactory.
-404 on Identity pages: Ensure app.MapRazorPages() is called in Program.cs.
