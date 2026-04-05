@@ -1,7 +1,14 @@
+using Microsoft.EntityFrameworkCore;
+using Warehouse.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
@@ -21,5 +28,16 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    // Creates the database and schema from the model when it does not exist yet.
+    // Use `dotnet ef migrations add` / `Update-Database` when you want versioned migrations instead.
+    db.Database.EnsureCreated();
+}
 
 app.Run();

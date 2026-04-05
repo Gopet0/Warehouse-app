@@ -1,0 +1,38 @@
+@model IEnumerable<Product>
+@{
+    ViewBag.Title = "Products";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h1>Products</h1>
+    <a href="/Product/Create" class="btn btn-primary">+ Add Product</a>
+</div>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>SKU</th>
+        <th>Category</th>
+        <th>Qty</th>
+        <th>Min</th>
+        <th>Unit Price</th>
+        <th>Location</th>
+        <th>Actions</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.SKU</td>
+            <td>@item.Category</td>
+            <td>@item.Quantity</td>
+            <td>@item.MinQuantity</td>
+            <td>@item.UnitPrice.ToString("C")</td>
+            <td>@item.WarehouseLocation</td>
+            <td>
+                <a href="/Product/Edit/@item.Id" class="btn btn-warning">Edit</a>
+                <a href="/Product/Delete/@item.Id" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+    }
+</table>

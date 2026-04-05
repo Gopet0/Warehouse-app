@@ -1,76 +1,83 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Warehouse.Models;
 
-namespace Warehouse.Controllers
+namespace Warehouse.Controllers;
+
+public class SupplierController : Controller
 {
-    public class SupplierController : Controller
+    private readonly AppDbContext _db;
+
+    public SupplierController(AppDbContext db)
     {
-        private AppDbContext db = new AppDbContext();
+        _db = db;
+    }
 
-        public ActionResult Index()
+    public async Task<IActionResult> Index()
+    {
+        return View(await _db.Suppliers.ToListAsync());
+    }
+
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(Supplier supplier)
+    {
+        if (ModelState.IsValid)
         {
-            return View(db.Suppliers.ToList());
+            _db.Suppliers.Add(supplier);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        public ActionResult Create()
+        return View(supplier);
+    }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        var supplier = await _db.Suppliers.FindAsync(id);
+        if (supplier == null)
+            return NotFound();
+        return View(supplier);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Supplier supplier)
+    {
+        if (ModelState.IsValid)
         {
-            return View();
+            _db.Entry(supplier).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(Supplier supplier)
+        return View(supplier);
+    }
+
+    public async Task<IActionResult> Delete(int id)
+    {
+        var supplier = await _db.Suppliers.FindAsync(id);
+        if (supplier == null)
+            return NotFound();
+        return View(supplier);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var supplier = await _db.Suppliers.FindAsync(id);
+        if (supplier != null)
         {
-            if (ModelState.IsValid)
-            {
-                db.Suppliers.Add(supplier);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(supplier);
+            _db.Suppliers.Remove(supplier);
+            await _db.SaveChangesAsync();
         }
 
-        public ActionResult Edit(int id)
-        {
-            Supplier supplier = db.Suppliers.Find(id);
-            if (supplier == null) return HttpNotFound();
-            return View(supplier);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(Supplier supplier)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(supplier).State = System.Data.Entity.EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(supplier);
-        }
-
-        public ActionResult Delete(int id)
-        {
-            Supplier supplier = db.Suppliers.Find(id);
-            if (supplier == null) return HttpNotFound();
-            return View(supplier);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Supplier supplier = db.Suppliers.Find(id);
-            db.Suppliers.Remove(supplier);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing) db.Dispose();
-            base.Dispose(disposing);
-        }
+        return RedirectToAction(nameof(Index));
     }
 }

@@ -1,59 +1,57 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Warehouse.Models;
 
-namespace Warehouse.Controllers
+namespace Warehouse.Controllers;
+
+public class StockTransactionController : Controller
 {
-    public class StockTransactionController : Controller
+    private readonly AppDbContext _db;
+
+    public StockTransactionController(AppDbContext db)
     {
-        private AppDbContext db = new AppDbContext();
+        _db = db;
+    }
 
-        public ActionResult Index()
-        {
-            var transactions = db.StockTransactions
-                .Include(t => t.Product)
-                .Include(t => t.Supplier)
-                .ToList();
-            return View(transactions);
-        }
+    public async Task<IActionResult> Index()
+    {
+        var transactions = await _db.StockTransactions
+            .Include(t => t.Product)
+            .Include(t => t.Supplier)
+            .ToListAsync();
+        return View(transactions);
+    }
 
-        public ActionResult Create()
-        {
-            ViewBag.ProductId = new SelectList(db.Products, "Id", "Name");
-            ViewBag.SupplierId = new SelectList(db.Suppliers, "Id", "CompanyName");
-            return View();
-        }
+    public async Task<IActionResult> Create()
+    {
+        ViewBag.ProductId = new SelectList(await _db.Products.ToListAsync(), "Id", "Name");
+        ViewBag.SupplierId = new SelectList(await _db.Suppliers.ToListAsync(), "Id", "CompanyName");
+        return View();
+    }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(StockTransaction transaction)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(StockTransaction transaction)
+    {
+        if (ModelState.IsValid)
         {
-            if (ModelState.IsValid)
+            var product = await _db.Products.FindAsync(transaction.ProductId);
+            if (product != null)
             {
-                // Update product quantity
-                var product = db.Products.Find(transaction.ProductId);
-                if (product != null)
-                {
-                    if (transaction.Type == "stock_in")
-                        product.Quantity += transaction.Quantity;
-                    else
-                        product.Quantity -= transaction.Quantity;
-                }
-
-                db.StockTransactions.Add(transaction);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (transaction.Type == "stock_in")
+                    product.Quantity += transaction.Quantity;
+                else
+                    product.Quantity -= transaction.Quantity;
             }
-            ViewBag.ProductId = new SelectList(db.Products, "Id", "Name");
-            ViewBag.SupplierId = new SelectList(db.Suppliers, "Id", "CompanyName");
-            return View(transaction);
+
+            _db.StockTransactions.Add(transaction);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing) db.Dispose();
-            base.Dispose(disposing);
-        }
+        ViewBag.ProductId = new SelectList(await _db.Products.ToListAsync(), "Id", "Name");
+        ViewBag.SupplierId = new SelectList(await _db.Suppliers.ToListAsync(), "Id", "CompanyName");
+        return View(transaction);
     }
 }
-

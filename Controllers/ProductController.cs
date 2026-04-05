@@ -1,84 +1,83 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Warehouse.Models;
 
-namespace Warehouse.Controllers
+namespace Warehouse.Controllers;
+
+public class ProductController : Controller
 {
-    public class ProductController : Controller
+    private readonly AppDbContext _db;
+
+    public ProductController(AppDbContext db)
     {
-        private AppDbContext db = new AppDbContext();
+        _db = db;
+    }
 
-        // GET: Product
-        public ActionResult Index()
+    public async Task<IActionResult> Index()
+    {
+        return View(await _db.Products.ToListAsync());
+    }
+
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(Product product)
+    {
+        if (ModelState.IsValid)
         {
-            return View(db.Products.ToList());
+            _db.Products.Add(product);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Product/Create
-        public ActionResult Create()
+        return View(product);
+    }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        var product = await _db.Products.FindAsync(id);
+        if (product == null)
+            return NotFound();
+        return View(product);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Product product)
+    {
+        if (ModelState.IsValid)
         {
-            return View();
+            _db.Entry(product).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        // POST: Product/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(Product product)
+        return View(product);
+    }
+
+    public async Task<IActionResult> Delete(int id)
+    {
+        var product = await _db.Products.FindAsync(id);
+        if (product == null)
+            return NotFound();
+        return View(product);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var product = await _db.Products.FindAsync(id);
+        if (product != null)
         {
-            if (ModelState.IsValid)
-            {
-                db.Products.Add(product);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(product);
+            _db.Products.Remove(product);
+            await _db.SaveChangesAsync();
         }
 
-        // GET: Product/Edit/5
-        public ActionResult Edit(int id)
-        {
-            Product product = db.Products.Find(id);
-            if (product == null) return HttpNotFound();
-            return View(product);
-        }
-
-        // POST: Product/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(Product product)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(product).State = System.Data.Entity.EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(product);
-        }
-
-        // GET: Product/Delete/5
-        public ActionResult Delete(int id)
-        {
-            Product product = db.Products.Find(id);
-            if (product == null) return HttpNotFound();
-            return View(product);
-        }
-
-        // POST: Product/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Product product = db.Products.Find(id);
-            db.Products.Remove(product);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing) db.Dispose();
-            base.Dispose(disposing);
-        }
+        return RedirectToAction(nameof(Index));
     }
 }

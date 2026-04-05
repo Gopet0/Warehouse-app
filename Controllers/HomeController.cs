@@ -1,20 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Warehouse.Models;
 
-namespace Warehouse.Controllers
+namespace Warehouse.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController: Controller
+    private readonly AppDbContext _db;
+
+    public HomeController(AppDbContext db)
     {
-        private AppDbContext db = new AppDbContext();
+        _db = db;
+    }
 
-        public ActionResult Index()
-        {
-            ViewBag.TotalProducts = db.Products.Count();
-            ViewBag.TotalSuppliers = db.Suppliers.Count();
-            ViewBag.LowStock = db.Products.Count(p => p.Quantity <= p.MinQuantity);
-            ViewBag.TotalTransactions = db.StockTransactions.Count();
-            return View();
-        }
-
+    public async Task<IActionResult> Index()
+    {
+        ViewBag.TotalProducts = await _db.Products.CountAsync();
+        ViewBag.TotalSuppliers = await _db.Suppliers.CountAsync();
+        ViewBag.LowStock = await _db.Products.CountAsync(p => p.Quantity <= p.MinQuantity);
+        ViewBag.TotalTransactions = await _db.StockTransactions.CountAsync();
+        return View();
     }
 }
