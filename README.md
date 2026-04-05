@@ -28,7 +28,7 @@ Before running the project, make sure you have:
 - SQL Server (LocalDB, SQL Express, or full SQL Server)
 - Visual Studio 2022 (recommended) or VS Code
   
-Common Issues & Fixes
+##Common Issues & Fixes
 
 SSL Certificate Error: Add TrustServerCertificate=True to the connection string.
 Login Failed: Make sure the database exists and your user has permissions (or use SQL Authentication with sa).
