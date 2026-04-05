@@ -24,6 +24,45 @@
         nav a:hover { background: #3d5166; }
         nav .brand { font-size: 18px; font-weight: bold; margin-right: 20px; }
 
+        nav .nav-spacer { flex: 1; }
+        nav .nav-auth {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        nav .nav-user {
+            color: #bdc3c7;
+            font-size: 14px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        nav .nav-logout-form { display: inline; margin: 0; }
+        nav .btn-nav {
+            background: #34495e;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        nav .btn-nav:hover { background: #3d5166; color: white; }
+        nav .btn-nav-alt { background: #27ae60; }
+        nav .btn-nav-alt:hover { background: #219a52; }
+
+        .checkbox-row label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        .checkbox-row input[type="checkbox"] { width: auto; }
+
         .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
 
         h1, h2 { color: #2c3e50; margin-bottom: 20px; }
@@ -131,9 +170,15 @@
         <a href="/Product">Products</a>
         <a href="/Supplier">Suppliers</a>
         <a href="/StockTransaction">Transactions</a>
+        <span class="nav-spacer"></span>
+        <div class="nav-auth">
+            <partial name="_LoginPartial" />
+        </div>
     </nav>
     <div class="container">
         @RenderBody()
     </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -5,6 +5,7 @@ namespace Warehouse.Models
         {
             [Required]
             [EmailAddress]
+            [Display(Name = "Email")]
             public string Email { get; set; } = string.Empty;
 
             [Required]
@@ -13,6 +14,8 @@ namespace Warehouse.Models
 
             [Display(Name = "Remember me")]
             public bool RememberMe { get; set; }
+
+            public string? ReturnUrl { get; set; }
         }
 
         public class RegisterViewModel

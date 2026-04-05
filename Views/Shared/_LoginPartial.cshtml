@@ -1,0 +1,17 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <span class="nav-user">@User.Identity?.Name</span>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="nav-logout-form">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-nav">Log out</button>
+    </form>
+}
+else
+{
+    <a href="/Account/Login" class="btn btn-nav">Log in</a>
+    <a href="/Account/Register" class="btn btn-nav btn-nav-alt">Register</a>
+}
