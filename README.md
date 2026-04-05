@@ -30,10 +30,10 @@ Before running the project, make sure you have:
   
 ## Common Issues & Fixes
 
-SSL Certificate Error: Add TrustServerCertificate=True to the connection string.
-Login Failed: Make sure the database exists and your user has permissions (or use SQL Authentication with sa).
-No DbContext found: Add a parameterless constructor or IDesignTimeDbContextFactory.
-404 on Identity pages: Ensure app.MapRazorPages() is called in Program.cs.
+- SSL Certificate Error: Add TrustServerCertificate=True to the connection string.
+- Login Failed: Make sure the database exists and your user has permissions (or use SQL Authentication with sa).
+- No DbContext found: Add a parameterless constructor or IDesignTimeDbContextFactory.
+- 404 on Identity pages: Ensure app.MapRazorPages() is called in Program.cs.
 
 ## Setup Instructions
 
