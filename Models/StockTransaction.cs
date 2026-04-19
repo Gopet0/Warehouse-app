@@ -6,17 +6,19 @@ namespace Warehouse.Models
     {
         public int Id { get; set; }
 
-        [Required]
         [Display(Name = "Product")]
+        [Range(1, int.MaxValue, ErrorMessage = "Select a product.")]
         public int ProductId { get; set; }
 
         public Product Product { get; set; }
 
-        [Required]
+        
+
+       
         [Display(Name = "Type")]
         public string Type { get; set; } // "stock_in" or "stock_out"
 
-        [Required]
+        [Range(1, 1_000_000, ErrorMessage = "Quantity must be at least 1.")]
         public int Quantity { get; set; }
 
         [Display(Name = "Supplier")]
@@ -24,7 +26,7 @@ namespace Warehouse.Models
 
         public Supplier Supplier { get; set; }
 
-        public string Notes { get; set; }
+        public string Notes { get; set; } = string.Empty;
 
         [Display(Name = "Date")]
         public DateTime TransactionDate { get; set; } = DateTime.Now;

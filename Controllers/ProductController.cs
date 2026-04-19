@@ -22,13 +22,21 @@ public class ProductController : Controller
 
     public IActionResult Create()
     {
-        return View();
+        return View(new Product
+        {
+            Quantity = 0,
+            MinQuantity = 0,
+            UnitPrice = 0m
+        });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Product product)
     {
+        product.WarehouseLocation = product.WarehouseLocation?.Trim() ?? string.Empty;
+        product.Description = product.Description?.Trim() ?? string.Empty;
+
         if (ModelState.IsValid)
         {
             _db.Products.Add(product);
@@ -51,6 +59,9 @@ public class ProductController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(Product product)
     {
+        product.WarehouseLocation = product.WarehouseLocation?.Trim() ?? string.Empty;
+        product.Description = product.Description?.Trim() ?? string.Empty;
+
         if (ModelState.IsValid)
         {
             _db.Entry(product).State = EntityState.Modified;

@@ -27,15 +27,23 @@ public class StockTransactionController : Controller
 
     public async Task<IActionResult> Create()
     {
-        ViewBag.ProductId = new SelectList(await _db.Products.ToListAsync(), "Id", "Name");
-        ViewBag.SupplierId = new SelectList(await _db.Suppliers.ToListAsync(), "Id", "CompanyName");
-        return View();
+        await PopulateTransactionLookupsAsync();
+        return View(new StockTransaction
+        {
+            Quantity = 1,
+            TransactionDate = DateTime.Now
+        });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(StockTransaction transaction)
+    public async Task<IActionResult> Create(
+        [Bind(Prefix = "")] StockTransaction transaction)
     {
+        transaction.Notes = transaction.Notes?.Trim() ?? string.Empty;
+        if (transaction.TransactionDate == default)
+            transaction.TransactionDate = DateTime.Now;
+
         if (ModelState.IsValid)
         {
             var product = await _db.Products.FindAsync(transaction.ProductId);
@@ -52,8 +60,13 @@ public class StockTransactionController : Controller
             return RedirectToAction(nameof(Index));
         }
 
+        await PopulateTransactionLookupsAsync();
+        return View(transaction);
+    }
+
+    private async Task PopulateTransactionLookupsAsync()
+    {
         ViewBag.ProductId = new SelectList(await _db.Products.ToListAsync(), "Id", "Name");
         ViewBag.SupplierId = new SelectList(await _db.Suppliers.ToListAsync(), "Id", "CompanyName");
-        return View(transaction);
     }
 }
